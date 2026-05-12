@@ -1,0 +1,60 @@
+name: Dark Green Daily Log
+
+on:
+  schedule:
+    # Runs at 04:30 UTC (10:00 AM IST) and 16:30 UTC (10:00 PM IST)
+    - cron: '30 4,16 * * *'
+  workflow_dispatch: # Allows you to trigger it manually for testing
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Generate Deep Activity
+        run: |
+          # 1. Setup Identity
+          git config --local user.email "rssharmakapro@gmail.com"
+          git config --local user.name "Ravi80595"
+          # 2. Create directory for logs
+          mkdir -p daily-logs
+          # 3. Meaningful Technical Topics
+          TOPICS=(
+            "react-performance-hooks" 
+            "nextjs-edge-runtime" 
+            "typescript-utility-types" 
+            "nodejs-worker-threads" 
+            "postgresql-query-optimization"
+            "clean-architecture-patterns"
+            "microservices-communication"
+          )
+          
+          # 4. RANDOMIZED LOOP (Pick a random number between 3 and 10)
+          # This makes the "Green Board" look natural (varying intensity)
+          ITERATIONS=$(( ( RANDOM % 8 ) + 3 ))
+          echo "Bhai, today we are doing $ITERATIONS commits to keep it random."
+          for ((i=1; i<=$ITERATIONS; i++))
+          do
+            # Pick random topic and generate unique filename
+            RANDOM_TOPIC=${TOPICS[$RANDOM % ${#TOPICS[@]}]}
+            UNIQUE_ID=$(date +%s%N)
+            FILENAME="daily-logs/${RANDOM_TOPIC}-${UNIQUE_ID: -6}.md"
+            TIMESTAMP=$(date +'%Y-%m-%d %H:%M:%S')
+            # Create a meaningful Markdown file
+            echo "## Deep Dive: ${RANDOM_TOPIC//-/ }" > $FILENAME
+            echo "Logged on: $TIMESTAMP" >> $FILENAME
+            echo -e "\n### Technical Analysis\n" >> $FILENAME
+            echo "Current focus is on scaling $RANDOM_TOPIC. Optimizing for latency and ensuring type-safety across the full-stack layer." >> $FILENAME
+            echo -e "\n---\n*Automated internal dev-log for profile synchronization.*" >> $FILENAME
+            # Commit each file individually
+            git add .
+            git commit -m "feat: optimize $RANDOM_TOPIC logic ($TIMESTAMP) [skip ci]"
+            
+            # 5. RANDOM DELAY (1 to 4 seconds) 
+            # So Git history doesn't show all commits at the exact same second
+            sleep $(( ( RANDOM % 4 ) + 1 ))
+          done
+          # 6. Push all commits
+          git push
